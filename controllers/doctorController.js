@@ -1,5 +1,10 @@
 const Doctor = require('../models/doctor');
 
+
+exports.getDoctorPortal = async (req, res) => {
+    res.render('doctor_portal')
+}
+
 exports.createDoctor = async (req, res) => {
     try {
         const newDoctor = new Doctor(req.body);
