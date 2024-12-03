@@ -14,12 +14,28 @@ steps:
   inputs:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'SonarQube Community Build.'
+    scannerMode: 'cli'
+    configMode: 'manual'
+    cliProjectKey: 'express_project_key'
+    cliSources: '.'
+    cliExclusions: 'node_modules/**,build/**'
 
    # Step 2: Install dependencies and build the project
 - script: |
     npm install
     npm run build
   displayName: 'Install Dependencies and Build'
+
+- task: SonarQubeAnalyze@7
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
+
+- task: SonarQubePublish@7
+  inputs:
+    pollingTimeoutSec: '600'
 
 # Step 3: Run Tests
 - script: |
