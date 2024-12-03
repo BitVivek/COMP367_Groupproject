@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Access Health Records</title>
+    <link rel="stylesheet" href="formstyles.css">
+</head>
+<body>
+    <div class="container">
+    <h1>Access Health Records</h1>
+    <nav>
+        <ul class="navbar">
+            <li class="home-icon">
+                <a href="index.html">
+                    <img src="homepage.ico" alt="Home Icon" class="icon-img">
+                </a>
+            </li>
+            <li class="dropdown">
+                <a href="doctor_portal.html" class="dropbtn">Doctor Portal</a>
+                <div class="dropdown-content">
+                    <a href="schedule_appointment.html">Schedule Appointment</a>
+                    <a href="view_update_patient_info.html">View/Update Patient Info</a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="patient_portal.html" class="dropbtn">Patient Portal</a>
+                <div class="dropdown-content">
+                    <a href="access_health_records.html">Access Health Records</a>
+                    <a href="book_appointment.html">Book Appointment</a>
+                </div>
+            </li>
+            <li>
+                <a href="nurse_portal.html">Nurse Portal</a>
+            </li>
+            <li>
+                <a href="register_patient.html">Register Patient</a>
+            </li>
+        </ul>
+    </nav>
+    <form id="healthRecordsForm">
+
+        <label for="patientName">Patient Name:</label>
+        <select id="patientName" name="patientName" required onchange="handlePatientSelection(this.value)"></select><br>
+        
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input type="date" id="dateOfBirth" name="dateOfBirth" required><br>
+        
+        <label for="bloodTest">Blood Test Results:</label>
+        <textarea id="bloodTest" name="bloodTest" disabled></textarea><br>
+        
+        <label for="xray">X-ray Results:</label>
+        <textarea id="xray" name="xray" disabled></textarea><br>
+        
+        <label for="mri">MRI Results:</label>
+        <textarea id="mri" name="mri" disabled></textarea><br>
+        
+        <label for="ultrasound">Ultrasound Results:</label>
+        <textarea id="ultrasound" name="ultrasound" disabled></textarea><br>
+        
+        <button type="submit">Access Records</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/patients')
+                .then(response => response.json())
+                .then(patients => {
+                    const patientSelect = document.getElementById('patientName');
+                    patients.forEach(patient => {
+                        const option = document.createElement('option');
+                        option.value = patient._id;
+                        option.textContent = patient.name;
+                        patientSelect.appendChild(option);
+                    });
+                });
+        });
+
+        function handlePatientSelection(patientId) {
+            fetch(`/api/patients/${patientId}`)
+                .then(response => response.json())
+                .then(patient => {
+                    // document.getElementById('patientName').value = patient.name;
+                    document.getElementById('dateOfBirth').value = patient.dateOfBirth ? new Date(patient.dateOfBirth).toISOString().split('T')[0] : ''; // Format to YYYY-MM-DD
+                    document.getElementById('bloodTest').value = patient.xray;
+                    document.getElementById('xray').value = patient.bloodTest; // assuming it's a string
+                    document.getElementById('mri').value = patient.mri; // assuming it's a string
+                    document.getElementById('ultrasound').value = patient.ultrasound; // assuming it's a string
+
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+        document.getElementById('healthRecordsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Simulate fetching health records based on the form input (for demonstration)
+            const patientName = document.getElementById('patientName').value;
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const accessCode = document.getElementById('accessCode').value;
+            
+            // Here you could fetch actual health records from a server/database based on the inputs
+            
+            // For demonstration, we'll just display a message with fetched data
+            const fetchedData = {
+                bloodTest: "Blood test results for " + patientName,
+                xray: "X-ray results for " + patientName,
+                mri: "MRI results for " + patientName,
+                ultrasound: "Ultrasound results for " + patientName
+            };
+            
+            // Update textareas with fetched data (for demonstration)
+            document.getElementById('bloodTest').value = fetchedData.bloodTest;
+            document.getElementById('xray').value = fetchedData.xray;
+            document.getElementById('mri').value = fetchedData.mri;
+            document.getElementById('ultrasound').value = fetchedData.ultrasound;
+        });
+    </script>
+    </div>
+</body>
+</html>

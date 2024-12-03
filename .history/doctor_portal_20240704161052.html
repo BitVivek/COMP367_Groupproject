@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .link-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .link {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .link:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Portal</h1>
+        <div class="link-container">
+            <div class="link" onclick="location.href='schedule_appointment.html'">
+                <h3>Schedule Appointment</h3>
+            </div>
+            <div class="link" onclick="location.href='view_update_patient_info.html'">
+                <h3>View/Update Patient Info</h3>
+            </div>
+            <!-- Add more links as needed -->
+        </div>
+    </div>
+</body>
+</html>

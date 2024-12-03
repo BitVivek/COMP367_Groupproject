@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View and Update Patient Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>View and Update Patient Information</h1>
+        
+        <!-- Patient Information Section -->
+        <h2>Patient Information</h2>
+        <form id="patientInfoForm">
+            <label for="patientName">Patient Name:</label>
+            <input type="text" id="patientName" name="patientName" disabled><br>
+            
+            <label for="age">Age:</label>
+            <input type="text" id="age" name="age" disabled><br>
+            
+            <label for="gender">Gender:</label>
+            <input type="text" id="gender" name="gender" disabled><br>
+            
+            <label for="history">Medical History:</label>
+            <textarea id="history" name="history" rows="5"></textarea><br>
+            
+            <label for="diagnosis">Diagnosis:</label>
+            <textarea id="diagnosis" name="diagnosis" rows="5"></textarea><br>
+            
+            <h2>Vital Signs</h2>
+            <label for="bloodPressure">Blood Pressure:</label>
+            <input type="text" id="bloodPressure" name="bloodPressure"><br>
+            
+            <label for="heartRate">Heart Rate:</label>
+            <input type="text" id="heartRate" name="heartRate"><br>
+            
+            <label for="temperature">Temperature:</label>
+            <input type="text" id="temperature" name="temperature"><br>
+            
+            <button type="submit">Update Information</button>
+        </form>
+    </div>
+
+    <script>
+        const patientId = '668a003ffdb0e7bb34f72cb0';  
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch(`/api/patients/${patientId}`)
+                .then(response => response.json())
+                .then(patient => {
+                    document.getElementById('patientName').value = patient.name;
+                    document.getElementById('age').value = patient.age;
+                    document.getElementById('gender').value = patient.gender;
+                    document.getElementById('history').value = patient.medicalHistory;
+                    document.getElementById('diagnosis').value = patient.diagnosis;
+                    document.getElementById('bloodPressure').value = patient.vitalSigns.bloodPressure;
+                    document.getElementById('heartRate').value = patient.vitalSigns.heartRate;
+                    document.getElementById('temperature').value = patient.vitalSigns.temperature;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        document.getElementById('patientInfoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const updatedData = {
+                medicalHistory: document.getElementById('history').value,
+                diagnosis: document.getElementById('diagnosis').value,
+                vitalSigns: {
+                    bloodPressure: document.getElementById('bloodPressure').value,
+                    heartRate: document.getElementById('heartRate').value,
+                    temperature: document.getElementById('temperature').value
+                }
+            };
+            
+            fetch(`/api/patients/${patientId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Patient information updated successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

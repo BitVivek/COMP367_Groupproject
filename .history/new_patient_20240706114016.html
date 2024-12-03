@@ -1,0 +1,57 @@
+<!-- public/new_patient.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Patient Form</title>
+</head>
+<body>
+    <h1>Create New Patient</h1>
+    <form id="newPatientForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input type="date" id="dateOfBirth" name="dateOfBirth"><br><br>
+        <label for="medicalHistory">Medical History:</label><br>
+        <textarea id="medicalHistory" name="medicalHistory"></textarea><br><br>
+        <label for="vitalSigns">Vital Signs:</label><br>
+        <textarea id="vitalSigns" name="vitalSigns"></textarea><br><br>
+        <button type="submit">Create Patient</button>
+        <div id="feedbackMessage"></div>
+    </form>
+    
+    <script>
+        const newPatientForm = document.getElementById('newPatientForm');
+        const feedbackMessage = document.getElementById('feedbackMessage');
+    
+        newPatientForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(newPatientForm);
+            const requestData = Object.fromEntries(formData.entries());
+    
+            try {
+                const response = await fetch('/api/patients', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                if (!response.ok) {
+                    throw new Error('Error creating patient');
+                }
+                const newPatient = await response.json();
+                console.log('New patient created:', newPatient);
+                feedbackMessage.innerHTML = 'Patient created successfully!';
+                // Optionally redirect to a success page or handle response
+            } catch (error) {
+                console.error('Error creating patient:', error);
+                feedbackMessage.innerHTML = 'Failed to create patient. Please try again.';
+                // Handle error (e.g., display error message)
+            }
+        });
+    </script>
+    
+</body>
+</html>
