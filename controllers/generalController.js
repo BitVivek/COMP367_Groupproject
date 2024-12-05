@@ -1,7 +1,6 @@
 const alertMessage = require('../helpers/alertMessage');
 const patientController = require('../controllers/patientController');
 const doctorController = require('../controllers/doctorController');
-
 exports.getIndex = async (req, res) => {
     console.log('GET /index');
     const data = { title: 'Home', message: undefined, user: res.locals.user };
@@ -24,7 +23,7 @@ exports.postLogin = async (req, res) => {
     if (req.body.type === 'Patient') {
         return patientController.checkLogin(req, res);
     }
-    res.render('login');
+    res.render('login', data);
 };
 
 exports.getRegister = async (req, res) => {
@@ -65,4 +64,5 @@ exports.postResetUser = async (req, res) => {
     if (req.body.type === 'Patient') {
         return patientController.resetPassword(req, res);
     }
+    res.render('reset_password', data);
 };
