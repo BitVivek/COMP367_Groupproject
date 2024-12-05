@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Atlas connection
 const connectionString = process.env.MONGOOSE_URI
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(connectionString)
     .then(() => {
         console.log('Connected to MongoDB Atlas');
     })

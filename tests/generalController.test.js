@@ -1,129 +1,87 @@
-const sinon = require('sinon');
-const assert = require('assert');
-const generalController = require('../controllers/generalController');
+const { getIndex, getLogin, postLogin, getRegister, postRegister, getLogout, getResetUser, postResetUser } = require('../controllers/generalController');
 const patientController = require('../controllers/patientController');
+const alertMessage = require('../helpers/alertMessage');
 
-describe('General Controller', function() {
-    describe('getLogin', () => {
-        it('should render the login page', async () => {
-            const req = {};
-            const res = {
-                render: sinon.spy()
-            };
+jest.mock('../helpers/alertMessage');
+jest.mock('../controllers/patientController');
 
-            await generalController.getLogin(req, res);
+describe('General Controller', () => {
+    let req, res;
 
-            assert(res.render.calledOnce);
-            assert(res.render.calledWith('login', { title: 'Login', message: undefined, user: undefined }));
-        });
+    beforeEach(() => {
+        req = {
+            body: {},
+        };
+        res = {
+            locals: { user: null },
+            render: jest.fn(),
+            status: jest.fn(() => res),
+            clearCookie: jest.fn(),
+        };
     });
 
-    describe('postLogin', () => {
-        it('should call patientController.checkLogin for Patient type', async () => {
-            const req = {
-                body: {
-                    email: 'testuser@example.com',
-                    password: 'testpassword',
-                    type: 'Patient'
-                }
-            };
-            const res = {
-                render: sinon.spy()
-            };
-            const checkLoginStub = sinon.stub(patientController, 'checkLogin').resolves();
-
-            await generalController.postLogin(req, res);
-
-            assert(checkLoginStub.calledOnce);
-            checkLoginStub.restore();
-        });
-
-        it('should render login page with error message if fields are missing', async () => {
-            const req = {
-                body: {
-                    email: '',
-                    password: '',
-                    type: ''
-                }
-            };
-            const res = {
-                render: sinon.spy()
-            };
-
-            await generalController.postLogin(req, res);
-
-            assert(res.render.calledOnce);
-            assert(res.render.calledWith('login', sinon.match.has('message')));
-        });
+    test('getIndex renders the index page', async () => {
+        await getIndex(req, res);
+        expect(res.render).toHaveBeenCalledWith('index', { title: 'Home', message: undefined, user: null });
     });
 
-    describe('getRegister', () => {
-        it('should render the registration page', async () => {
-            const req = {};
-            const res = {
-                render: sinon.spy()
-            };
-
-            await generalController.getRegister(req, res);
-
-            assert(res.render.calledOnce);
-            assert(res.render.calledWith('register', { title: 'Register', message: undefined, user: undefined }));
-        });
+    test('getLogin renders the login page', async () => {
+        await getLogin(req, res);
+        expect(res.render).toHaveBeenCalledWith('login', { title: 'Login', message: undefined, user: null });
     });
 
-    describe('postRegister', () => {
-        it('should call patientController.createPatient if fields are valid', async () => {
-            const req = {
-                body: {
-                    email: 'newuser@example.com',
-                    password: 'newpassword',
-                    name: 'New User'
-                }
-            };
-            const res = {
-                render: sinon.spy()
-            };
-            const createPatientStub = sinon.stub(patientController, 'createPatient').resolves();
-
-            await generalController.postRegister(req, res);
-
-            assert(createPatientStub.calledOnce);
-            createPatientStub.restore();
-        });
-
-        it('should render register page with error message if fields are missing', async () => {
-            const req = {
-                body: {
-                    email: '',
-                    password: '',
-                    name: ''
-                }
-            };
-            const res = {
-                render: sinon.spy()
-            };
-
-            await generalController.postRegister(req, res);
-
-            assert(res.render.calledOnce);
-            assert(res.render.calledWith('register', sinon.match.has('message')));
-        });
+    test('postLogin handles missing fields', async () => {
+        await postLogin(req, res);
+        expect(alertMessage.alertMessage).toHaveBeenCalledWith('error', 'Login Failed!', 'Fields are missing');
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.render).toHaveBeenCalledWith('login', expect.objectContaining({ message: expect.anything() }));
     });
 
-    describe('getLogout', () => {
-        it('should clear the jwt cookie and render the login page', async () => {
-            const req = {};
-            const res = {
-                clearCookie: sinon.spy(),
-                render: sinon.spy()
-            };
+    test('postLogin calls patientController when type is Patient', async () => {
+        req.body = { email: 'test@example.com', password: 'password', type: 'Patient' };
+        await postLogin(req, res);
+        expect(patientController.checkLogin).toHaveBeenCalledWith(req, res);
+    });
 
-            await generalController.getLogout(req, res);
+    test('getRegister renders the register page', async () => {
+        await getRegister(req, res);
+        expect(res.render).toHaveBeenCalledWith('register', { title: 'Register', message: undefined, user: null });
+    });
 
-            assert(res.clearCookie.calledOnce);
-            assert(res.clearCookie.calledWith('jwt'));
-            assert(res.render.calledOnce);
-            assert(res.render.calledWith('login'));
-        });
+    test('postRegister handles missing fields', async () => {
+        await postRegister(req, res);
+        expect(alertMessage.alertMessage).toHaveBeenCalledWith('error', 'Register Failed', 'Fields are missing');
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.render).toHaveBeenCalledWith('register', expect.objectContaining({ message: expect.anything() }));
+    });
+
+    test('postRegister calls patientController.createPatient', async () => {
+        req.body = { email: 'test@example.com', password: 'password', name: 'John Doe' };
+        await postRegister(req, res);
+        expect(patientController.createPatient).toHaveBeenCalledWith(req, res);
+    });
+
+    test('getLogout clears cookies and renders login', async () => {
+        await getLogout(req, res);
+        expect(res.clearCookie).toHaveBeenCalledWith('jwt');
+        expect(res.render).toHaveBeenCalledWith('login');
+    });
+
+    test('getResetUser renders the reset password page', async () => {
+        await getResetUser(req, res);
+        expect(res.render).toHaveBeenCalledWith('reset_password', { title: 'Recover password', message: undefined, user: null });
+    });
+
+    test('postResetUser handles missing fields', async () => {
+        await postResetUser(req, res);
+        expect(alertMessage.alertMessage).toHaveBeenCalledWith('error', 'Recover Failed!', 'Fields are missing');
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.render).toHaveBeenCalledWith('reset_password', expect.objectContaining({ message: expect.anything() }));
+    });
+
+    test('postResetUser calls patientController.resetPassword when type is Patient', async () => {
+        req.body = { email: 'test@example.com', password: 'password', type: 'Patient' };
+        await postResetUser(req, res);
+        expect(patientController.resetPassword).toHaveBeenCalledWith(req, res);
     });
 });
