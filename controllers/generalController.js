@@ -4,16 +4,17 @@ const patientController = require('../controllers/patientController');
 const doctorController = require('../controllers/doctorController');
 
 exports.getIndex = async (req, res) => {
-    
+    console.log('GET /index');
     const data = { title:'Home',message:undefined,user:res.locals.user  }
     res.render('index')
 }
 exports.getLogin = async (req, res) => {
+    console.log('GET /login');
     const data = { title:'Login',message:undefined,user:res.locals.user   }
     res.render('login',data)
 }
 exports.postLogin = async (req, res) => {
-    
+    console.log('POST /login');
     const data = { title:'Login',message:undefined,user:res.locals.user   }
     if(!req.body.email ||!req.body.password || !req.body.type ){
         data.message =  alertMessage.alertMessage('error', 'Login Failed!', 'Login Failed!');
@@ -27,7 +28,7 @@ exports.postLogin = async (req, res) => {
     res.render('login')
 }
 exports.getRegister = async (req, res) => {
-    
+    console.log('GET /register');
     const data = { title:'Register',message:undefined,user:res.locals.user   }
     res.render('register',data)
 }
