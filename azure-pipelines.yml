@@ -12,7 +12,7 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'
+    versionSpec: '18.18.0'
   displayName: 'Install Node.js'
 - task: SonarQubePrepare@7
   inputs:
@@ -48,6 +48,13 @@ steps:
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
   displayName: 'Publish Test Results'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
 
 # Step 5: Publish Build Artifact
 - task: PublishPipelineArtifact@1
