@@ -55,6 +55,12 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
+    tarCompression: false
+    verbose: true
+    prependRootFolderName: false
+    patterns: |
+      !node_modules/**
+      !.git/**
   displayName: 'Archive Build Artifacts'
 
 # Publish Build Artifact
