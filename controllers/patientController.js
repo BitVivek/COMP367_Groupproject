@@ -2,6 +2,11 @@
 const Patient = require('../models/patient');
 
 exports.createPatient = async (req, res) => {
+    
+    // Check for required fields
+    if (!name || !email || !dateOfBirth) {
+        return res.status(400).json({ error: 'All fields (name, email, dateOfBirth) are required' });
+    }
     try {
         const patient = new Patient(req.body);
         console.log(req.body);
