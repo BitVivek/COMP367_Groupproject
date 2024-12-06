@@ -48,6 +48,13 @@ steps:
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
   displayName: 'Publish Test Results'# Archive Build Artifacts
+
+- script: |
+    echo "Removing node_modules and .git directories..."
+    rm -rf $(Build.SourcesDirectory)/node_modules
+    rm -rf $(Build.SourcesDirectory)/.git
+  displayName: 'Clean Up Unwanted Directories'
+  
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.SourcesDirectory)'
@@ -55,12 +62,7 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
-    tarCompression: false
-    verbose: true
-    prependRootFolderName: false
-    patterns: |
-      !node_modules/**
-      !.git/**
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.BinariesDirectory)'
