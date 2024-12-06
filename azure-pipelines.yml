@@ -47,7 +47,7 @@ steps:
   inputs:
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
-  displayName: 'Publish Test Results'
+  displayName: 'Publish Test Results'# Archive Build Artifacts
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.BinariesDirectory)'
@@ -55,10 +55,12 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
-    
-# Step 5: Publish Build Artifact
+  displayName: 'Archive Build Artifacts'
+
+# Publish Build Artifact
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)'
+    targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     artifactName: 'drop'
   displayName: 'Publish Build Artifact'
+
