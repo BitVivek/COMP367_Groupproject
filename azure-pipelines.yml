@@ -70,3 +70,14 @@ steps:
     artifactName: 'drop'
   displayName: 'Publish Build Artifact'
 
+- script: |
+    echo "Deploying artifact to QAT environment..."
+  displayName: 'Deploy to QAT Env (Mock)'
+
+- script: |
+    echo "Deploying artifact to Staging environment..."
+  displayName: 'Deploy to Staging Env (Mock)'
+
+- script: |
+    echo "Deploying artifact to Production environment..."
+  displayName: 'Deploy to Production Env (Mock)'
