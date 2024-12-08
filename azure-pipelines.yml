@@ -13,10 +13,11 @@ steps:
   inputs:
     SonarQube: 'SonarQube Community Build.'
     scannerMode: 'cli'
-    configMode: 'manual'
+    configMode: 'file'
     cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_2513e5ce-d077-4bec-9c4f-380f93b0d2a7'
     cliSources: '.'
     cliExclusions: 'node_modules/**,build/**'
+
 - task: SonarQubeAnalyze@7
   inputs:
     jdkversion: 'JAVA_HOME_17_X64'
@@ -30,10 +31,6 @@ steps:
     npm install
     npm run build
   displayName: 'Install Dependencies and Build'
-
-# - task: SonarQubeAnalyze@7
-#   inputs:
-#     jdkversion: 'JAVA_HOME_17_X64'
 
 - task: SonarQubePublish@7
   inputs:
