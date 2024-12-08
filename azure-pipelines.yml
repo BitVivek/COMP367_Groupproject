@@ -1,10 +1,5 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
-- development
+- main
 
 pool:
   name: Self-hosted
@@ -19,19 +14,23 @@ steps:
     SonarQube: 'SonarQube Community Build.'
     scannerMode: 'cli'
     configMode: 'manual'
-    cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_2513e5ce-d077-4bec-9c4f-380f93b0d2a7'
+    cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_8715c4d7-58a8-4cf1-80ac-f00c1dba9b34'
     cliSources: '.'
     cliExclusions: 'node_modules/**,build/**'
 
+- task: SonarQubeAnalyze@7
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
+
+- task: SonarCloudPublish@3
+  inputs:
+    pollingTimeoutSec: '300'
+    
    # Step 2: Install dependencies and build the project
 - script: |
     npm install
     npm run build
   displayName: 'Install Dependencies and Build'
-
-# - task: SonarQubeAnalyze@7
-#   inputs:
-#     jdkversion: 'JAVA_HOME_17_X64'
 
 - task: SonarQubePublish@7
   inputs:

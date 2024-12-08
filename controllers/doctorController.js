@@ -6,6 +6,11 @@ exports.getDoctorPortal = async (req, res) => {
 }
 
 exports.createDoctor = async (req, res) => {
+    
+    // Ensure necessary fields are provided
+    if (!name || !specialty || !licenseNumber) {
+        return res.status(400).json({ error: 'All fields (name, specialty, licenseNumber) are required' });
+    }
     try {
         const newDoctor = new Doctor(req.body);
         await newDoctor.save();
