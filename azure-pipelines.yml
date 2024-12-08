@@ -17,7 +17,14 @@ steps:
     cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_2513e5ce-d077-4bec-9c4f-380f93b0d2a7'
     cliSources: '.'
     cliExclusions: 'node_modules/**,build/**'
+- task: SonarQubeAnalyze@7
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
 
+- task: SonarCloudPublish@3
+  inputs:
+    pollingTimeoutSec: '300'
+    
    # Step 2: Install dependencies and build the project
 - script: |
     npm install
