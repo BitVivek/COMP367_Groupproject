@@ -4,7 +4,91 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+- main
+
+pool:
+  name: Self-hosted
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.18.0'
+  displayName: 'Install Node.js'
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'SonarQube Community Build.'
+    scannerMode: 'cli'
+    configMode: 'manual'
+    cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_2513e5ce-d077-4bec-9c4f-380f93b0d2a7'
+    cliSources: '.'
+    cliExclusions: 'node_modules/**,build/**'
+
+   # Step 2: Install dependencies and build the project
+- script: |
+    npm install
+    npm run build
+  displayName: 'Install Dependencies and Build'
+
+# - task: SonarQubeAnalyze@7
+#   inputs:
+#     jdkversion: 'JAVA_HOME_17_X64'
+
+- task: SonarQubePublish@7
+  inputs:
+    pollingTimeoutSec: '600'
+
+# Step 3: Run Tests
+- script: |
+    npm test
+  displayName: 'Run Tests'
+
+# Step 4: Publish test results 
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/test-results.xml'
+  condition: succeededOrFailed()
+  displayName: 'Publish Test Results'# Archive Build Artifacts
+
+- script: |
+    echo "Removing node_modules and .git directories..."
+    rm -rf $(Build.SourcesDirectory)/node_modules
+    rm -rf $(Build.SourcesDirectory)/.git
+  displayName: 'Clean Up Unwanted Directories'
+  
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+# Publish Build Artifact
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    artifactName: 'drop'
+  displayName: 'Publish Build Artifact'
+
+- script: |
+    echo "Deploying artifact to QAT environment..."
+  displayName: 'Deploy to QAT Env (Mock)'
+
+- script: |
+    echo "Deploying artifact to Staging environment..."
+  displayName: 'Deploy to Staging Env (Mock)'
+
+- script: |
+    echo "Deploying artifact to Production environment..."
+  displayName: 'Deploy to Production Env (Mock)'
+=======
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- development
 
 pool:
   name: Self-hosted
