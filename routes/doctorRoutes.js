@@ -8,4 +8,7 @@ router.get('/doctors/:id', doctorController.getDoctorById);
 router.put('/doctors/:id', doctorController.updateDoctor);
 router.delete('/doctors/:id', doctorController.deleteDoctor);
 
+router.get('/doctor_portal', doctorController.getDoctorPortal);
+
+
 module.exports = router;

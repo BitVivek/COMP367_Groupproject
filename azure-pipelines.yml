@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+- development
 
 pool:
   name: Self-hosted
@@ -19,7 +19,7 @@ steps:
     SonarQube: 'SonarQube Community Build.'
     scannerMode: 'cli'
     configMode: 'manual'
-    cliProjectKey: 'express_project_key'
+    cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_2513e5ce-d077-4bec-9c4f-380f93b0d2a7'
     cliSources: '.'
     cliExclusions: 'node_modules/**,build/**'
 
@@ -29,9 +29,9 @@ steps:
     npm run build
   displayName: 'Install Dependencies and Build'
 
-- task: SonarQubeAnalyze@7
-  inputs:
-    jdkversion: 'JAVA_HOME_17_X64'
+# - task: SonarQubeAnalyze@7
+#   inputs:
+#     jdkversion: 'JAVA_HOME_17_X64'
 
 - task: SonarQubePublish@7
   inputs:
@@ -47,18 +47,37 @@ steps:
   inputs:
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
-  displayName: 'Publish Test Results'
+  displayName: 'Publish Test Results'# Archive Build Artifacts
+
+- script: |
+    echo "Removing node_modules and .git directories..."
+    rm -rf $(Build.SourcesDirectory)/node_modules
+    rm -rf $(Build.SourcesDirectory)/.git
+  displayName: 'Clean Up Unwanted Directories'
+  
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
     includeRootFolder: true
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
 
-# Step 5: Publish Build Artifact
+# Publish Build Artifact
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)'
+    targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     artifactName: 'drop'
   displayName: 'Publish Build Artifact'
+
+- script: |
+    echo "Deploying artifact to QAT environment..."
+  displayName: 'Deploy to QAT Env (Mock)'
+
+- script: |
+    echo "Deploying artifact to Staging environment..."
+  displayName: 'Deploy to Staging Env (Mock)'
+
+- script: |
+    echo "Deploying artifact to Production environment..."
+  displayName: 'Deploy to Production Env (Mock)'
