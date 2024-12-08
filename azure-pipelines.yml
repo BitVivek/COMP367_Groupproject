@@ -13,13 +13,10 @@ steps:
   inputs:
     SonarQube: 'SonarQube Community Build.'
     scannerMode: 'cli'
-    configMode: 'file'
-    cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_2513e5ce-d077-4bec-9c4f-380f93b0d2a7'
+    configMode: 'manual'
+    cliProjectKey: 'COMP367_GroupProject_COMP367_GroupProject_8715c4d7-58a8-4cf1-80ac-f00c1dba9b34'
     cliSources: '.'
     cliExclusions: 'node_modules/**,build/**'
-    extraProperties: |
-      sonar.verbose=true
-      sonar.branch.name=""
 
 - task: SonarQubeAnalyze@7
   inputs:
