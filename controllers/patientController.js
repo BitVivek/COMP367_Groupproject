@@ -14,7 +14,6 @@ exports.getRegisterPatient = async (req, res) => {
 }
 
 exports.createPatient = async (req, res) => {
-
     const data = { title: 'Register', message: undefined, user: res.locals.user }
     try {
 
